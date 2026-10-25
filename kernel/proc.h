@@ -108,3 +108,10 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
 };
+
+// Earliest of own and donated deadline (lower = more urgent)
+static inline uint
+effective(struct proc *p)
+{
+  return p->donated < p->deadline ? p->donated : p->deadline;
+}

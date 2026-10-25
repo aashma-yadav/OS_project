@@ -123,6 +123,10 @@ allocproc(void)
 
 found:
   p->pid = allocpid();
+  p->wid = 0;
+  p->deadline = NO_DEADLINE;
+  p->donated = NO_DEADLINE;
+  p->waiting_on = 0;
   p->state = USED;
 
   // Allocate a trapframe page.
@@ -163,6 +167,10 @@ freeproc(struct proc *p)
   p->pagetable = 0;
   p->sz = 0;
   p->pid = 0;
+  p->wid = 0;
+  p->deadline = NO_DEADLINE;
+  p->donated = NO_DEADLINE;
+  p->waiting_on = 0;
   p->name[0] = 0;
   p->chan = 0;
   p->killed = 0;
@@ -298,6 +306,8 @@ kfork(void)
   release(&wait_lock);
 
   acquire(&np->lock);
+  np->wid = p->wid;
+  np->deadline = p->deadline;
   np->state = RUNNABLE;
   release(&np->lock);
 
@@ -428,44 +438,40 @@ kwait(uint64 addr)
 void
 scheduler(void)
 {
-  struct proc *p;
   struct cpu *c = mycpu();
+  static int rr = 0;   // rotating start point, breaks ties fairly
 
   c->proc = 0;
   for (;;) {
-    // The most recent process to run may have had interrupts
-    // turned off; enable them to avoid a deadlock if all
-    // processes are waiting. Then turn them back off
-    // to avoid a possible race between an interrupt
-    // and wfi.
     intr_on();
     intr_off();
 
-    int found = 0;
-    for (p = proc; p < &proc[NPROC]; p++) {
-      acquire(&p->lock);
-      if (p->state == RUNNABLE) {
-        // Switch to chosen process.  It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
-        p->state = RUNNING;
-        c->proc = p;
-        swtch(&c->context, &p->context);
-
-        // Don't re-enable interrupts on release.
-        mycpu()->intena = 0;
-
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
-        c->proc = 0;
-        found = 1;
-      }
-      release(&p->lock);
+    // Pass 1: pick the earliest effective deadline WITHOUT holding
+    // locks (so we never hold two locks and cannot deadlock).
+    struct proc *best = 0;
+    int start = rr++;
+    for (int i = 0; i < NPROC; i++) {
+      struct proc *p = &proc[(start + i) % NPROC];
+      if (p->state == RUNNABLE &&
+          (best == 0 || effective(p) < effective(best)))
+        best = p;
     }
-    if (found == 0) {
-      // nothing to run; stop running on this core until an interrupt.
+
+    if (best == 0) {
       asm volatile("wfi");
+      continue;
     }
+
+    // Pass 2: lock the winner and re-check it is still runnable.
+    acquire(&best->lock);
+    if (best->state == RUNNABLE) {
+      best->state = RUNNING;
+      c->proc = best;
+      swtch(&c->context, &best->context);
+      mycpu()->intena = 0;
+      c->proc = 0;
+    }
+    release(&best->lock);
   }
 }
 
