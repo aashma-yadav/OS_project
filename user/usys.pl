@@ -44,3 +44,4 @@ entry("pause");
 entry("uptime");
 entry("sync");
 entry("hello");
+entry("setworkflow");

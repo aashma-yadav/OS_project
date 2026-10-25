@@ -122,3 +122,24 @@ sys_hello(void)
   printk("hello %d %d %d %d\n", a, b, c, d);
   return a + b + c + d;
 }
+
+// setworkflow(wid, deadline_ticks): deadline is stored as an ABSOLUTE tick
+uint64
+sys_setworkflow(void)
+{
+  int wid, dl;
+  struct proc *p = myproc();
+
+  argint(0, &wid);
+  argint(1, &dl);
+
+  acquire(&tickslock);
+  uint now = ticks;
+  release(&tickslock);
+
+  acquire(&p->lock);
+  p->wid = wid;
+  p->deadline = now + dl;
+  release(&p->lock);
+  return 0;
+}

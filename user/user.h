@@ -25,6 +25,7 @@ char *sys_sbrk(int, int);
 int pause(int);
 int uptime(void);
 int hello(int, int, int, int);
+int setworkflow(int, int);
 int sync(void);
 
 // ulib.c
