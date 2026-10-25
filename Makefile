@@ -150,6 +150,7 @@ UPROGS=\
 	$U/_hello\
 	$U/_wf\
 	$U/_edftest\
+	$U/_pipeline\
 	$U/_logstress\
 	$U/_forphan\
 	$U/_dorphan\
