@@ -110,3 +110,15 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_hello(void)
+{
+  int a, b, c, d;
+  argint(0, &a);
+  argint(1, &b);
+  argint(2, &c);
+  argint(3, &d);
+  printk("hello %d %d %d %d\n", a, b, c, d);
+  return a + b + c + d;
+}
