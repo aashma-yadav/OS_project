@@ -449,7 +449,7 @@ scheduler(void)
     // Pass 1: pick the earliest effective deadline WITHOUT holding
     // locks (so we never hold two locks and cannot deadlock).
     struct proc *best = 0;
-    int start = rr++;
+    int start = rr;
     for (int i = 0; i < NPROC; i++) {
       struct proc *p = &proc[(start + i) % NPROC];
       if (p->state == RUNNABLE &&
@@ -462,6 +462,7 @@ scheduler(void)
       continue;
     }
 
+    rr = (int)(best - proc) + 1;   // next search starts after the winner
     // Pass 2: lock the winner and re-check it is still runnable.
     acquire(&best->lock);
     if (best->state == RUNNABLE) {
