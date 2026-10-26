@@ -108,11 +108,46 @@ pipewrite(struct pipe *pi, uint64 addr, int n)
   return i;
 }
 
+#define MAXW 8
+
+extern struct proc proc[];
+
+// Processes holding a write end of pi, excluding 'self' and its ancestors
+// (a parent that is only wait()ing is not the writer).
+static int
+pipe_writers(struct pipe *pi, struct proc *self, struct proc **out, int max)
+{
+  int n = 0;
+  for (struct proc *q = proc; q < &proc[NPROC] && n < max; q++) {
+    if (q == self || q->state == UNUSED || q->state == ZOMBIE)
+      continue;
+    int anc = 0, depth = 0;
+    for (struct proc *a = self->parent; a && depth < NPROC; a = a->parent, depth++) {
+      if (a == q) {
+        anc = 1;
+        break;
+      }
+    }
+    if (anc)
+      continue;
+    for (int fd = 0; fd < NOFILE; fd++) {
+      struct file *f = q->ofile[fd];
+      if (f && f->type == FD_PIPE && f->pipe == pi && f->writable) {
+        out[n++] = q;
+        break;
+      }
+    }
+  }
+  return n;
+}
+
 int
 piperead(struct pipe *pi, uint64 addr, int n)
 {
   int i;
   struct proc *pr = myproc();
+  struct proc *ws[MAXW];
+  int nw = 0;
   char ch;
 
   acquire(&pi->lock);
@@ -121,10 +156,22 @@ piperead(struct pipe *pi, uint64 addr, int n)
       release(&pi->lock);
       return -1;
     }
+    // Lend our deadline to whoever can fill this pipe.
+    nw = pipe_writers(pi, pr, ws, MAXW);
+    if (nw > 0) {
+      pr->waiting_on = ws[0];
+      for (int k = 0; k < nw; k++)
+        donate(pr, ws[k], effective(pr));
+    }
     sleep_prepare(&pi->nread); //DOC: piperead-sleep
     release(&pi->lock);
     sleep();
     acquire(&pi->lock);
+    // Woken up: withdraw the loan.
+    pr->waiting_on = 0;
+    for (int k = 0; k < nw; k++)
+      recompute_donation(ws[k]);
+    nw = 0;
   }
   for (i = 0; i < n; i++) { //DOC: piperead-copy
     if (pi->nread == pi->nwrite)
