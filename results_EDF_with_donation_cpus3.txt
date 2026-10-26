@@ -1,6 +1,21 @@
-config: pipeline 4 100 35 6, CPUS=3, EDF with donation
-run1: +31 ticks, deadline 35: MET
-run2: +32 ticks, deadline 35: MET
-run3: +31 ticks, deadline 35: MET
-run4: +32 ticks, deadline 35: MET
-run5: +32 ticks, deadline 35: MET
+config: pipeline 4 100 35 6 2, CPUS=3, EDF_with_donation
+run1: +25 ticks, deadline 35: MET
+run2: +26 ticks, deadline 35: MET
+run3: +26 ticks, deadline 35: MET
+run4: +26 ticks, deadline 35: MET
+run5: +26 ticks, deadline 35: MET
+run6: +25 ticks, deadline 35: MET
+run7: +26 ticks, deadline 35: MET
+run8: +26 ticks, deadline 35: MET
+run9: +26 ticks, deadline 35: MET
+run10: +26 ticks, deadline 35: MET
+run11: +25 ticks, deadline 35: MET
+run12: +26 ticks, deadline 35: MET
+run13: +26 ticks, deadline 35: MET
+run14: +26 ticks, deadline 35: MET
+run15: +26 ticks, deadline 35: MET
+run16: +26 ticks, deadline 35: MET
+run17: +26 ticks, deadline 35: MET
+run18: +26 ticks, deadline 35: MET
+run19: +26 ticks, deadline 35: MET
+run20: +26 ticks, deadline 35: MET

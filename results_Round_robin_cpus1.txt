@@ -1,0 +1,21 @@
+config: pipeline 4 100 35 3 0, CPUS=1, Round_robin
+run1: +91 ticks, deadline 35: MISSED
+run2: +87 ticks, deadline 35: MISSED
+run3: +87 ticks, deadline 35: MISSED
+run4: +87 ticks, deadline 35: MISSED
+run5: +87 ticks, deadline 35: MISSED
+run6: +91 ticks, deadline 35: MISSED
+run7: +87 ticks, deadline 35: MISSED
+run8: +87 ticks, deadline 35: MISSED
+run9: +87 ticks, deadline 35: MISSED
+run10: +87 ticks, deadline 35: MISSED
+run11: +91 ticks, deadline 35: MISSED
+run12: +87 ticks, deadline 35: MISSED
+run13: +91 ticks, deadline 35: MISSED
+run14: +87 ticks, deadline 35: MISSED
+run15: +87 ticks, deadline 35: MISSED
+run16: +91 ticks, deadline 35: MISSED
+run17: +87 ticks, deadline 35: MISSED
+run18: +87 ticks, deadline 35: MISSED
+run19: +91 ticks, deadline 35: MISSED
+run20: +87 ticks, deadline 35: MISSED

@@ -1,0 +1,21 @@
+config: pipeline 4 100 35 3 1, CPUS=1, EDF_no_donation
+run1: +73 ticks, deadline 35: MISSED
+run2: +73 ticks, deadline 35: MISSED
+run3: +72 ticks, deadline 35: MISSED
+run4: +72 ticks, deadline 35: MISSED
+run5: +73 ticks, deadline 35: MISSED
+run6: +73 ticks, deadline 35: MISSED
+run7: +72 ticks, deadline 35: MISSED
+run8: +73 ticks, deadline 35: MISSED
+run9: +72 ticks, deadline 35: MISSED
+run10: +72 ticks, deadline 35: MISSED
+run11: +72 ticks, deadline 35: MISSED
+run12: +73 ticks, deadline 35: MISSED
+run13: +72 ticks, deadline 35: MISSED
+run14: +72 ticks, deadline 35: MISSED
+run15: +72 ticks, deadline 35: MISSED
+run16: +72 ticks, deadline 35: MISSED
+run17: +73 ticks, deadline 35: MISSED
+run18: +72 ticks, deadline 35: MISSED
+run19: +73 ticks, deadline 35: MISSED
+run20: +73 ticks, deadline 35: MISSED
