@@ -708,3 +708,40 @@ procdump(void)
     printk("\n");
   }
 }
+
+// Print every donation event (set to 0 to silence, e.g. during timing runs)
+int donate_trace = 1;
+
+// Lend deadline dl to process 'to', then along the chain of whoever 'to'
+// is itself waiting on. Bounded by NPROC so a pipe cycle cannot loop forever.
+void
+donate(struct proc *from, struct proc *to, uint dl)
+{
+  int depth = 0;
+  int frompid = from ? from->pid : 0;
+  while (to != 0 && depth++ < NPROC) {
+    if (to->donated <= dl)
+      break;                        // already at least this urgent
+    to->donated = dl;
+    if (donate_trace)
+      printk("donate: pid %d -> pid %d, deadline %d\n", frompid, to->pid, dl);
+    frompid = to->pid;
+    to = to->waiting_on;
+  }
+}
+
+// Withdraw a loan: p's donated deadline becomes the most urgent deadline
+// among the sleeping processes that are still waiting on p.
+void
+recompute_donation(struct proc *p)
+{
+  uint m = NO_DEADLINE;
+  for (struct proc *q = proc; q < &proc[NPROC]; q++) {
+    if (q != p && q->waiting_on == p && q->state == SLEEPING) {
+      uint e = effective(q);
+      if (e < m)
+        m = e;
+    }
+  }
+  p->donated = m;
+}
