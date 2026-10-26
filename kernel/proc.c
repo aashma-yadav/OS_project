@@ -710,7 +710,7 @@ procdump(void)
 }
 
 // Print every donation event (set to 0 to silence, e.g. during timing runs)
-int donate_trace = 1;
+int donate_trace = 0;
 
 // Lend deadline dl to process 'to', then along the chain of whoever 'to'
 // is itself waiting on. Bounded by NPROC so a pipe cycle cannot loop forever.

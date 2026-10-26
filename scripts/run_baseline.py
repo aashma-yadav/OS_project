@@ -22,6 +22,6 @@ for i in range(runs):
 c.sendcontrol("a"); c.send("x")
 c.close(force=True)
 
-out = os.path.join(repo, f"results_baseline_cpus{cpus}.txt")
+out = os.path.join(repo, "results_" + mode.replace(" ", "_") + f"_cpus{cpus}.txt")
 open(out, "w").write("\n".join(lines) + "\n")
 print("wrote", out)
