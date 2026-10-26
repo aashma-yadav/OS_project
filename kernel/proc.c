@@ -453,7 +453,7 @@ scheduler(void)
     for (int i = 0; i < NPROC; i++) {
       struct proc *p = &proc[(start + i) % NPROC];
       if (p->state == RUNNABLE &&
-          (best == 0 || effective(p) < effective(best)))
+          (best == 0 || SKEY(p) < SKEY(best)))
         best = p;
     }
 
@@ -711,12 +711,15 @@ procdump(void)
 
 // Print every donation event (set to 0 to silence, e.g. during timing runs)
 int donate_trace = 0;
+int sched_mode = 2;   // 0 = round-robin, 1 = EDF, 2 = EDF + donation
 
 // Lend deadline dl to process 'to', then along the chain of whoever 'to'
 // is itself waiting on. Bounded by NPROC so a pipe cycle cannot loop forever.
 void
 donate(struct proc *from, struct proc *to, uint dl)
 {
+  if (sched_mode != 2)
+    return;
   int depth = 0;
   int frompid = from ? from->pid : 0;
   while (to != 0 && depth++ < NPROC) {

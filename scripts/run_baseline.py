@@ -4,7 +4,7 @@ repo = os.path.expanduser("~/osproject/xv6-riscv")
 cpus = sys.argv[1] if len(sys.argv) > 1 else "1"
 cmd  = sys.argv[2] if len(sys.argv) > 2 else "pipeline 4 100 54 3"
 mode = sys.argv[3] if len(sys.argv) > 3 else "EDF without donation"
-runs = 5
+runs = int(sys.argv[4]) if len(sys.argv) > 4 else 5
 
 c = pexpect.spawn(f"make CPUS={cpus} qemu", cwd=repo, encoding="utf-8", timeout=600)
 c.expect("init: starting sh")

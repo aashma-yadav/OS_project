@@ -26,6 +26,7 @@ int pause(int);
 int uptime(void);
 int hello(int, int, int, int);
 int setworkflow(int, int);
+int setsched(int);
 int sync(void);
 
 // ulib.c

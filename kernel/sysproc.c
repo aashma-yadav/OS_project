@@ -143,3 +143,14 @@ sys_setworkflow(void)
   release(&p->lock);
   return 0;
 }
+
+uint64
+sys_setsched(void)
+{
+  int m;
+  argint(0, &m);
+  if (m < 0 || m > 2)
+    return -1;
+  sched_mode = m;
+  return 0;
+}

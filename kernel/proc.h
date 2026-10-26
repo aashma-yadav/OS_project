@@ -115,3 +115,6 @@ effective(struct proc *p)
 {
   return p->donated < p->deadline ? p->donated : p->deadline;
 }
+
+extern int sched_mode;   // 0 = round-robin, 1 = EDF, 2 = EDF + donation
+#define SKEY(p) (sched_mode == 0 ? 0 : (sched_mode == 1 ? (p)->deadline : effective(p)))

@@ -23,3 +23,4 @@
 #define SYS_sync   22
 #define SYS_hello  23
 #define SYS_setworkflow 24
+#define SYS_setsched 25

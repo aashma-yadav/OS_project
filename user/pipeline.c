@@ -23,11 +23,19 @@ main(int argc, char *argv[])
   }
   int n = atoi(argv[1]), work = atoi(argv[2]);
   int dl = atoi(argv[3]), hogs = atoi(argv[4]);
+  setsched(argc > 5 ? atoi(argv[5]) : 2);   // 0 RR, 1 EDF, 2 EDF+donation
   if (n < 2 || n > MAXST || hogs > MAXHOG) {
     printf("stages must be 2..%d, hogs 0..%d\n", MAXST, MAXHOG);
     exit(1);
   }
 
+  // Hogs are forked BEFORE the pipes exist, so they never hold a write end.
+  int hp[MAXHOG];
+  for (int h = 0; h < hogs; h++) {
+    hp[h] = fork();
+    if (hp[h] == 0)
+      for (;;) spin(1);
+  }
   int p[MAXST][2];
   for (int i = 0; i < n - 1; i++)
     pipe(p[i]);
@@ -59,14 +67,6 @@ main(int argc, char *argv[])
     }
   }
 
-  int hp[MAXHOG];
-  for (int h = 0; h < hogs; h++) {
-    hp[h] = fork();
-    if (hp[h] == 0) {
-      for (int i = 0; i < n - 1; i++) { close(p[i][0]); close(p[i][1]); }
-      for (;;) spin(1);
-    }
-  }
   for (int i = 0; i < n - 1; i++) { close(p[i][0]); close(p[i][1]); }
 
   for (int s = 0; s < n; s++) wait(0);      // only the stages exit by themselves
